@@ -1,0 +1,67 @@
+#cenimg img {
+
+background-size:cover
+}
+
+body {
+    background-color: FFFAF0;
+}
+
+#redrectangle{
+    width:400px;
+    height:400px;
+    background:#23B14D;
+    text-align: center;
+}
+
+
+html *
+{
+   color: #000 !important;
+   font-family: Arial !important;
+}
+
+#amberrectangle{
+    width:400px;
+    height:400px;
+    background:#23B14D
+}
+
+#greenrectangle{
+    width:400px;
+    height:400px;
+    background:#23B14D;
+}
+
+#blankrectangle1{
+    font-weight: bold;
+    width:400px;
+    height:20px;
+    text-align: center;
+}
+
+#blankrectangle2{
+    font-weight: bold;
+    width:400px;
+    height:20px;
+    text-align: center;
+}
+
+#blankrectangle3{
+    font-weight: bold;
+    width:400px;
+    height:20px;
+    text-align: center;
+}
+
+p {
+    font-size: 100px;
+    font-weight: bold;
+    text-align: center;
+    position: relative;
+    top: 48%;
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    font-family: "Arial, Helvetica, sans-serif;
+}

@@ -1,0 +1,199 @@
+<html>
+
+<head>
+    <meta http-equiv="refresh" content="10">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+
+</head>
+
+<body>
+
+    <h1 align=center>NAGIOS Monitor</h1>
+
+    <script>
+        var results_values = []
+        var results_services = []
+        var service_names = []
+        var results_array_final = []
+
+        $(document).ready(function() {
+            console.log("ready!");
+
+            //activateCritical();
+
+            $.ajax({
+                xhrFields: {
+                    withCredentials: true
+                },
+                type: "GET",
+                url: "http://NAGIOS-IP/nagios/cgi-bin/statusjson.cgi?query=servicelist&servicestatus=warning+critical",
+                dataType: "text",
+                //dataType: 'json',
+                async: false,
+                username: 'nagiosadmin',
+                crossDomain: true,
+                password: 'YOUR-NAGIOS-PASSWORD',
+                //data: { 'query': 'servicelist', 'servicestatus': 'warning+critical' },
+                success: function(responseData) {
+                    var JSONObject = JSON.parse(responseData);
+                    console.log(JSONObject); // Dump all data of the Object in the console
+
+                    for (var key in JSONObject.data.servicelist) {
+
+                        //alert(JSONObject.data.servicelist[key]);
+                        for (var key2 in JSONObject.data.servicelist[key]) {
+                            // grab key name
+                            for (i in JSONObject.data.servicelist[key]) {
+                                service_names.push(i);
+                            }
+
+                            results_values.push(JSONObject.data.servicelist[key][key2]);
+                            console.log(servicename);
+                            //alert(JSONObject.data.servicelist[key][key2]);
+                        }
+                    }
+
+                    for (i in JSONObject.data.servicelist) {
+                        results_services.push(i);
+                    }
+
+
+                    for (i in results_values) {
+                        results_array_final.push(results_services[i] + ',' + service_names[i] + ',' + results_values[i]);
+                    }
+
+                    //alert(results_array_final);
+
+                    var warningCount = 0;
+                    var criticalCount = 0;
+
+                    for (i in results_array_final) {
+                        var temp = results_array_final[i].split(',')[2];
+                        //alert(temp);
+                        if (temp == '4') {
+                            warningCount++;
+                        } else if (temp == '16') {
+                            criticalCount++;
+                        }
+                    }
+
+                    // check whether we need to update the dashboard with any alerts...
+                    if (warningCount > 0) {
+                        activateWarning(warningCount);
+                    }
+
+                    if (criticalCount > 0) {
+                        activateCritical(criticalCount);
+                    }
+
+                    // add relevent rows to table
+                    for (i in results_array_final) {
+                        var servicename = results_array_final[i].split(',')[1];
+                        var statuscode = results_array_final[i].split(',')[2];
+                        var hostname = results_array_final[i].split(',')[0];
+                        var statuscode_string = 'Unknown';
+
+                        if (statuscode == '4') {
+                            statuscode_string = 'Warning';
+                        } else if (statuscode == '16') {
+                            statuscode_string = 'Critical';
+                        }
+
+                        $('#alerttbl tr:last').after('<tr><td>' + hostname + '</td><td>' + servicename + '</td><td>' + statuscode_string + '</td></tr>');
+                    }
+
+
+                },
+                failure: function(response, status) {
+                    alert('Not working!');
+                }
+            });
+
+
+        });
+
+        function activateCritical(count) {
+            redr.innerHTML = count;
+            var p = $("#redrectangle").css("background-color", "#F50C33");
+            p.queue(function() {
+                p.css("background-color", "#F50C33");
+            });
+        }
+
+
+        function activateWarning(count) {
+            aedr.innerHTML = count;
+            var p = $("#amberrectangle").css("background-color", "#FFC90D");
+            p.queue(function() {
+                p.css("background-color", "#FFC90D");
+            });
+
+
+        }
+    </script>
+
+    <table align="center">
+        <tr>
+            <td>
+                <div id="redrectangle">
+                    <p id=redr>0</p>
+                </div>
+            </td>
+            <td>
+                <div id="amberrectangle">
+                    <p id=aedr>0</p>
+                </div>
+            </td>
+            <td>
+                <div id="greenrectangle">
+                    <p>0</p>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <table align="center">
+        <tr>
+            <td>
+                <div id="blankrectangle1">
+                    <br>CRITICAL</div>
+            </td>
+            <td>
+                <div id="blankrectangle2">
+                    <br>WARNING</div>
+            </td>
+            <td>
+                <div id="blankrectangle3">
+                    <br>UNKNOWN</div>
+            </td>
+        </tr>
+    </table>
+
+
+    <br></br>
+
+
+    <table id=alerttbl class="pure-table" align="center" width=1200px>
+        <thead>
+            <tr>
+                <th>Hostname</th>
+                <th>Service</th>
+                <th>State</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+
+            </tr>
+
+
+        </tbody>
+    </table>
+    
+</body>
+
+</html>
